@@ -1,0 +1,30 @@
+---
+
+registrator:
+  image: gliderlabs/registrator:v$VERSION
+  command: consul://consul:8500
+  links:
+    - consul:consul
+  volumes:
+    - /var/run/docker.sock:/tmp/docker.sock:ro
+
+consul:
+  image: consul
+  command: agent -dev -ui -client 0.0.0.0
+  ports:
+    - "8300:8300"
+    - "8400:8400"
+    - "8500:8500"
+    - "8600:8600"
+
+simple-rack:
+  build: docker/simple-rack
+  environment:
+    - SERVICE_NAME=simple-rack
+  ports:
+    - "8080:8080"
+
+monitor:
+  build: docker/monitor
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
